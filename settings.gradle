@@ -1,2 +1,4 @@
 rootProject.name = 'JavaFinalProject'
+include 'src:main:models'
+findProject(':src:main:models')?.name = 'models'
 
