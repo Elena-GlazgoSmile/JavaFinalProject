@@ -5,6 +5,8 @@ import com.example.models.Course;
 import com.example.models.Quest;
 import com.example.models.Student;
 import com.example.parser.TableParser;
+import com.example.vkApi.VKRepository;
+
 
 import java.io.IOException;
 import java.util.*;
@@ -20,12 +22,16 @@ public class Main {
     static ArrayList<Chapter> allChapters = null;
     static ArrayList<Quest> allQuests = null;
     static ArrayList<Course> allStatisticsInCourse = null;
+    static ArrayList<String> Ids = null;
 
     public static void main(String[] args) throws IOException {
         getInfo();
 /*
         System.out.println("Список всех студентов:");
         System.out.println(students);
+
+
+
         System.out.println("Список глав:");
         System.out.println(headers);
         System.out.println("Группы");
@@ -36,7 +42,7 @@ public class Main {
         System.out.println(quest);
         System.out.println("Типы задач");
         System.out.println(typesquest);
-*/
+
         System.out.println("Поля, принадлежащие классу Student:");
         System.out.println(String.format("Всего студентов: %s", Student.totalCountStudents));
         for (Student val : allStudents)
@@ -61,6 +67,16 @@ public class Main {
         for (int i = 0; i < allStatisticsInCourse.size(); i++) {
             System.out.println(allStatisticsInCourse.get(i) + Arrays.toString(Course.realScores.get(i).toArray()));
         }
+
+ */
+        VKRepository vkApiClient = new VKRepository();
+        List<String> fullNames = students;
+        int i = 0;
+        for (String val : vkApiClient.getUserIdsByNames(fullNames, 0, 30)) {
+            i++;
+            System.out.println(String.format("Студент - %s, %s", students.get(i), val));
+        }
+
     }
 
     private static void getInfo() {
