@@ -23,8 +23,6 @@ public class VKRepository {
         this.client = new OkHttpClient();
     }
 
-
-
     public String getUserIdByName(String fullName) throws IOException {
         String[] nameParts = fullName.split(" ");
         if (nameParts.length < 2) {

@@ -76,7 +76,6 @@ public class Main {
             i++;
             System.out.println(String.format("Студент - %s, %s", students.get(i), val));
         }
-
     }
 
     private static void getInfo() {
