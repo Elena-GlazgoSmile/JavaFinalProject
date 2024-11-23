@@ -5,9 +5,16 @@ import com.example.models.Course;
 import com.example.models.Quest;
 import com.example.models.Student;
 import com.example.parser.TableParser;
+import com.example.vkApi.VKRepository;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 
 import java.io.IOException;
 import java.util.*;
+
+import static com.example.vkApi.VKRepository.getUserCity;
+import static com.example.vkApi.VKRepository.searchUsers;
 
 public class Main {
     static ArrayList<String> students = null;
@@ -20,12 +27,16 @@ public class Main {
     static ArrayList<Chapter> allChapters = null;
     static ArrayList<Quest> allQuests = null;
     static ArrayList<Course> allStatisticsInCourse = null;
+    static ArrayList<String> Ids = null;
 
     public static void main(String[] args) throws IOException {
         getInfo();
 /*
         System.out.println("Список всех студентов:");
         System.out.println(students);
+
+
+
         System.out.println("Список глав:");
         System.out.println(headers);
         System.out.println("Группы");
@@ -36,7 +47,7 @@ public class Main {
         System.out.println(quest);
         System.out.println("Типы задач");
         System.out.println(typesquest);
-*/
+
         System.out.println("Поля, принадлежащие классу Student:");
         System.out.println(String.format("Всего студентов: %s", Student.totalCountStudents));
         for (Student val : allStudents)
@@ -61,6 +72,31 @@ public class Main {
         for (int i = 0; i < allStatisticsInCourse.size(); i++) {
             System.out.println(allStatisticsInCourse.get(i) + Arrays.toString(Course.realScores.get(i).toArray()));
         }
+
+
+        VKRepository vkApiClient = new VKRepository();
+        List<String> fullNames = students;
+        int j = -1;
+        for (String val : vkApiClient.getUserIdsByNames(fullNames, 0, 6)) {
+            j++;
+            System.out.println(String.format("Студент - %s, %s", students.get(j), val));
+        }
+*/
+        try {
+            for (int x = 0; x < 10; x++) {
+                JsonArray arrayOfUsers = searchUsers(students.get(x));
+                for (int i = 0; i < arrayOfUsers.size(); i++) {
+                    int ID = arrayOfUsers.get(i).getAsJsonObject().get("id").getAsInt();
+                    JsonObject city = getUserCity(ID);
+                    if (city != null) System.out.println(String.format("У студента с ID %s, указан город %s",
+                            ID, city.get("title").getAsString()));
+                    System.out.println(String.format("У студента с ID %s, город не указан", ID));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private static void getInfo() {
