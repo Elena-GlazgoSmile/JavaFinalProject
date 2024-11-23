@@ -17,11 +17,8 @@ public class VKRepository {
     private static final String API_VERSION = "5.131";
     private static final String BASE_URL = "https://api.vk.com/method/";
 
-    private final OkHttpClient client;
+    private static final OkHttpClient client = new OkHttpClient();
 
-    public VKRepository() {
-        this.client = new OkHttpClient();
-    }
 
     public String getUserIdByName(String fullName) throws IOException {
         String[] nameParts = fullName.split(" ");
@@ -70,4 +67,46 @@ public class VKRepository {
         return Ids;
     }
 
+    public static JsonArray searchUsers(String fullname) throws IOException {
+        String url = String.format("https://api.vk.com/method/users.search?q=%s&access_token=%s&v=%s",
+                fullname, ACCESS_TOKEN, API_VERSION);
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            assert response.body() != null;
+            String responseBody = response.body().string();
+            JsonObject jsonObj = JsonParser
+                    .parseString(responseBody)
+                    .getAsJsonObject();
+            TimeUnit.SECONDS.sleep(2);
+            return jsonObj.getAsJsonObject("response")
+                    .getAsJsonArray("items");
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static JsonObject getUserCity(int userID) throws IOException {
+        String url = String.format("https://api.vk.com/method/users.get?user_ids=%d&fields=city&access_token=%s&v=%s",
+                userID, ACCESS_TOKEN, API_VERSION);
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        try (Response response = client
+                .newCall(request)
+                .execute()) {
+            String responseBody = response.body().string();
+            JsonObject jsonObject = JsonParser
+                    .parseString(responseBody)
+                    .getAsJsonObject();
+            TimeUnit.SECONDS.sleep(2);
+            return jsonObject.getAsJsonArray("response")
+                    .get(0)
+                    .getAsJsonObject()
+                    .getAsJsonObject("city");
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

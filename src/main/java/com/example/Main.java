@@ -6,10 +6,15 @@ import com.example.models.Quest;
 import com.example.models.Student;
 import com.example.parser.TableParser;
 import com.example.vkApi.VKRepository;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 
 import java.io.IOException;
 import java.util.*;
+
+import static com.example.vkApi.VKRepository.getUserCity;
+import static com.example.vkApi.VKRepository.searchUsers;
 
 public class Main {
     static ArrayList<String> students = null;
@@ -68,14 +73,30 @@ public class Main {
             System.out.println(allStatisticsInCourse.get(i) + Arrays.toString(Course.realScores.get(i).toArray()));
         }
 
- */
+
         VKRepository vkApiClient = new VKRepository();
         List<String> fullNames = students;
-        int i = 0;
-        for (String val : vkApiClient.getUserIdsByNames(fullNames, 0, 30)) {
-            i++;
-            System.out.println(String.format("Студент - %s, %s", students.get(i), val));
+        int j = -1;
+        for (String val : vkApiClient.getUserIdsByNames(fullNames, 0, 6)) {
+            j++;
+            System.out.println(String.format("Студент - %s, %s", students.get(j), val));
         }
+*/
+        try {
+            for (int x = 0; x < 10; x++) {
+                JsonArray arrayOfUsers = searchUsers(students.get(x));
+                for (int i = 0; i < arrayOfUsers.size(); i++) {
+                    int ID = arrayOfUsers.get(i).getAsJsonObject().get("id").getAsInt();
+                    JsonObject city = getUserCity(ID);
+                    if (city != null) System.out.println(String.format("У студента с ID %s, указан город %s",
+                            ID, city.get("title").getAsString()));
+                    System.out.println(String.format("У студента с ID %s, город не указан", ID));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private static void getInfo() {
