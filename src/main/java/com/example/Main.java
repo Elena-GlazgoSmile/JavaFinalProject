@@ -1,5 +1,7 @@
 package com.example;
 
+import com.example.db.DBORMRepository;
+import com.example.db.DBRepository;
 import com.example.models.Chapter;
 import com.example.models.Course;
 import com.example.models.Quest;
@@ -10,8 +12,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.example.vkApi.VKRepository.getUserCity;
 import static com.example.vkApi.VKRepository.searchUsers;
@@ -29,7 +36,7 @@ public class Main {
     static ArrayList<Course> allStatisticsInCourse = null;
     static ArrayList<String> Ids = null;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         getInfo();
 /*
         System.out.println("Список всех студентов:");
@@ -59,9 +66,12 @@ public class Main {
             System.out.println(val.toString());
         System.out.println("_______");
         System.out.println("Поля, принадлежащие классу Quest");
+
         System.out.println(String.format("Всего задач: %s", Quest.questCounter));
+
         for (Quest val : allQuests)
             System.out.println(val.toString());
+
         System.out.println("_______");
         System.out.println("Поля, принадлежащие классу Course:");
         System.out.println("Название курса");
@@ -69,10 +79,10 @@ public class Main {
         System.out.println("Максимальные значения за задания ulearn");
         System.out.println(Course.maxScores);
         System.out.println("Реальные значения баллов студентов за задания ulearn:");
+
         for (int i = 0; i < allStatisticsInCourse.size(); i++) {
             System.out.println(allStatisticsInCourse.get(i) + Arrays.toString(Course.realScores.get(i).toArray()));
         }
-
 
         VKRepository vkApiClient = new VKRepository();
         List<String> fullNames = students;
@@ -81,7 +91,7 @@ public class Main {
             j++;
             System.out.println(String.format("Студент - %s, %s", students.get(j), val));
         }
-*/
+
         try {
             for (int x = 0; x < 10; x++) {
                 JsonArray arrayOfUsers = searchUsers(students.get(x));
@@ -96,6 +106,40 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        Scanner scanner = new Scanner(new File("C:\\Users\\712\\Desktop\\sqlite\\test.txt"));
+        while (scanner.hasNextLine()) {
+            System.out.println(scanner.nextLine());
+        }
+        scanner.close();
+*/
+
+     ///DBRepository.connect();
+     ///DBRepository.createTableStudents();
+        DBORMRepository DBO = new DBORMRepository();
+        DBO.connect();
+
+        DBO.createTable();
+        DBO.saveStudent(students, group, isInRe);
+        System.out.println(DBO.getStudents());
+        System.out.println(DBO.getStudentByName("Ануфриков Максим"));
+        DBO.close();
+/*
+        DBO.createTableOfChapters();
+        DBO.saveChapters(headers);
+        System.out.println(DBO.getChapters());
+        DBO.close();
+
+        DBO.createTableOfQuests();
+        DBO.saveQuests(typesquest, quest);
+        System.out.println(DBO.getQuests());
+        DBO.close();
+
+        DBO.createTableOfCourse();
+        DBO.saveCourse(students, group, Course.maxScores, Course.realScores);
+        System.out.println(DBO.getCourse());
+        DBO.close();
+*/
 
     }
 
