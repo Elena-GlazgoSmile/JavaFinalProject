@@ -248,5 +248,24 @@ public class TableParser {
 
         return course;
     }
+/*
+    public static ArrayList<String> suspiciousCoincidences(ArrayList<Stream<String>> realScores) {
+        ArrayList<String> suspiciousCoincidence = new ArrayList<>();
+        for (int i = 0; i < realScores.size(); i++) {
+            for (int j = 0; j < realScores.size(); j++) {
+                if (Arrays.toString(realScores.get(i).toArray()).equals(realScores.get(j))) {
+                    suspiciousCoincidence.add("Совпадения есть с номером");
+                    break;
+                }
+                if (j == 973) {
+                    suspiciousCoincidence.add("Совпадений нет");
+                }
+            }
+
+        }
+
+        return suspiciousCoincidence;
+    }
+*/
 
 }
