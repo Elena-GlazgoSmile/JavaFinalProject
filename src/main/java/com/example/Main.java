@@ -9,6 +9,7 @@ import com.example.models.Quest;
 import com.example.models.Student;
 import com.example.parser.TableParser;
 import com.example.visualisation.mapper.ChartOfStudents;
+import com.example.visualisation.mapper.StudentRealScores;
 import com.example.visualisation.mapper.newChart;
 import com.example.vkApi.VKRepository;
 import com.google.gson.JsonArray;
@@ -29,7 +30,7 @@ import static com.example.vkApi.VKRepository.getUserCity;
 import static com.example.vkApi.VKRepository.searchUsers;
 
 public class Main {
-    static ArrayList<String> students = null;
+    public static ArrayList<String> students = null;
     static ArrayList<String> headers = null;
     static ArrayList<String> group = null;
     public static ArrayList<String> isInRe = null;
@@ -49,8 +50,9 @@ public class Main {
         System.out.println("Список всех студентов:");
         System.out.println(students);
 
+ */
 
-
+/*
         System.out.println("Список глав:");
         System.out.println(headers);
         System.out.println("Группы");
@@ -158,7 +160,7 @@ public class Main {
 */
 
 
-
+/*
         javax.swing.SwingUtilities.invokeLater(() -> {
             newChart suspStudentsChart = new newChart("C# Students by Array of Suspicious Coincidences");
             suspStudentsChart.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -178,6 +180,15 @@ public class Main {
             groups.setVisible(true);
 
         });
+*/
+        SwingUtilities.invokeLater(() -> {
+            StudentRealScores example = new StudentRealScores("Реальные баллы у студентов");
+            example.setSize(800, 600);
+            example.setLocationRelativeTo(null);
+            example.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            example.setVisible(true);
+        });
+
 
         //System.out.println(StudentFromDBMapper.map(allStudents.get(0)));
     }
