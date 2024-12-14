@@ -151,10 +151,10 @@ public class TableParser {
     }
 
     public static ArrayList<Student> mapStudent(ArrayList<String> nameSurname,
-                                      ArrayList<String> group, ArrayList<String> isRe) {
+                                                ArrayList<String> group, ArrayList<String> isRe, ArrayList<String> sums) {
         ArrayList<Student> students = new ArrayList<>();
         for (int i = 0; i < nameSurname.toArray().length; i++) {
-            Student student = new Student(nameSurname.get(i), group.get(i), isRe.get(i));
+            Student student = new Student(nameSurname.get(i), group.get(i), isRe.get(i), sums.get(i));
             students.add(student);
         }
 

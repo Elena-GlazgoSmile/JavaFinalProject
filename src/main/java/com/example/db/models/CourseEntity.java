@@ -5,7 +5,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.ArrayList;
 
-@DatabaseTable(tableName = "Course")
+@DatabaseTable(tableName = "Courses")
 public class CourseEntity {
     public static final String NAME_COLUMN = "name";
 

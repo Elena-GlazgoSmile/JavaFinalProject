@@ -2,16 +2,22 @@ package com.example;
 
 import com.example.db.DBORMRepository;
 import com.example.db.DBRepository;
+import com.example.db.models.StudentsEntity;
 import com.example.models.Chapter;
 import com.example.models.Course;
 import com.example.models.Quest;
 import com.example.models.Student;
 import com.example.parser.TableParser;
+import com.example.visualisation.mapper.ChartOfStudents;
+import com.example.visualisation.mapper.StudentRealScores;
+import com.example.visualisation.mapper.newChart;
 import com.example.vkApi.VKRepository;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.jfree.chart.ChartUtils;
 
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,10 +30,10 @@ import static com.example.vkApi.VKRepository.getUserCity;
 import static com.example.vkApi.VKRepository.searchUsers;
 
 public class Main {
-    static ArrayList<String> students = null;
+    public static ArrayList<String> students = null;
     static ArrayList<String> headers = null;
     static ArrayList<String> group = null;
-    static ArrayList<String> isInRe = null;
+    public static ArrayList<String> isInRe = null;
     static ArrayList<String> quest = null;
     static ArrayList<String> typesquest = null;
     static ArrayList<Student> allStudents = null;
@@ -35,6 +41,8 @@ public class Main {
     static ArrayList<Quest> allQuests = null;
     static ArrayList<Course> allStatisticsInCourse = null;
     static ArrayList<String> Ids = null;
+    public static List<Integer> sums = null;
+    public static ArrayList<String> lastSuspicious = null;
 
     public static void main(String[] args) throws Exception {
         getInfo();
@@ -42,18 +50,28 @@ public class Main {
         System.out.println("Список всех студентов:");
         System.out.println(students);
 
+ */
 
-
+/*
         System.out.println("Список глав:");
         System.out.println(headers);
         System.out.println("Группы");
         System.out.println(group);
+
+
         System.out.println("Группы относящиеся к пересдаче");
         System.out.println(isInRe);
         System.out.println("Названия задач");
         System.out.println(quest);
         System.out.println("Типы задач");
         System.out.println(typesquest);
+
+
+        System.out.println("Совпадения по баллам среди студентов одной группы, " +
+                "исключая совпадения с нулевыми статистиками");
+        for (String suspicious : lastSuspicious) {
+            System.out.println(suspicious);
+        }
 
         System.out.println("Поля, принадлежащие классу Student:");
         System.out.println(String.format("Всего студентов: %s", Student.totalCountStudents));
@@ -112,7 +130,7 @@ public class Main {
             System.out.println(scanner.nextLine());
         }
         scanner.close();
-*/
+
 
      ///DBRepository.connect();
      ///DBRepository.createTableStudents();
@@ -120,11 +138,11 @@ public class Main {
         DBO.connect();
 
         DBO.createTable();
-        DBO.saveStudent(students, group, isInRe);
+        DBO.saveStudent(students, group, isInRe, lastSuspicious);
         System.out.println(DBO.getStudents());
         System.out.println(DBO.getStudentByName("Ануфриков Максим"));
         DBO.close();
-/*
+
         DBO.createTableOfChapters();
         DBO.saveChapters(headers);
         System.out.println(DBO.getChapters());
@@ -141,6 +159,38 @@ public class Main {
         DBO.close();
 */
 
+
+/*
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            newChart suspStudentsChart = new newChart("C# Students by Array of Suspicious Coincidences");
+            suspStudentsChart.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            suspStudentsChart.setSize(800, 600);
+            suspStudentsChart.setLocationRelativeTo(null);
+            suspStudentsChart.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            suspStudentsChart.setVisible(true);
+
+        });
+
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            ChartOfStudents groups = new ChartOfStudents("Retake Groups or Basic Groups");
+            groups.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            groups.setSize(800, 600);
+            groups.setLocationRelativeTo(null);
+            groups.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            groups.setVisible(true);
+
+        });
+*/
+        SwingUtilities.invokeLater(() -> {
+            StudentRealScores example = new StudentRealScores("Реальные баллы у студентов");
+            example.setSize(800, 600);
+            example.setLocationRelativeTo(null);
+            example.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            example.setVisible(true);
+        });
+
+
+        //System.out.println(StudentFromDBMapper.map(allStudents.get(0)));
     }
 
     private static void getInfo() {
@@ -161,12 +211,46 @@ public class Main {
             Quest.questCounter = quest.size();
             typesquest = TableParser.getTypeQuests("rowData/basicprogramming_2.csv");
             Course.nameCourse = TableParser.getFileName("rowData/basicprogramming_2.csv");
-            allStudents = TableParser.mapStudent(students, group, isInRe);
+
+
             allChapters = TableParser.mapChapters(headers);
             allQuests = TableParser.mapQuests(quest, typesquest);
             Course.maxScores = TableParser.getMaxScores("rowData/basicprogramming_2.csv");
             Course.realScores = TableParser.realScores("rowData/basicprogramming_2.csv");
+            sums = Course.realScores.stream()
+                   .map(stream -> stream
+                           .mapToInt(Integer::parseInt)
+                           .sum())
+                    .collect(Collectors.toList());
+
+            Map<String,String> dictionary = new HashMap<String,String>();
+            for (int i = 0; i < sums.size(); i++) {
+                for (int j = 0; j < sums.size(); j++) {
+                    if (sums.get(i).equals(sums.get(j)) && i!=j && group.get(i).equals(group.get(j)) && !sums.get(i).equals(0)) {
+                        dictionary.put(String.format(String.valueOf(i)), String.format(String.valueOf(j)));
+                    }
+                }
+            }
+
+
+
+            //System.out.println(i + " " + dictionary.get(String.valueOf(i)));
+            ArrayList<String> isSuspicious = new ArrayList<>();
+            for (int i = 0; i < sums.size(); i++) {
+                if (dictionary.get(String.valueOf(i)) != null) {
+                    int num = i + 1 ;
+                    int number = Integer.parseInt(dictionary.get(String.valueOf(i))) + 1;
+                    isSuspicious.add("Совпадение номера " + num + " c номером " + number);
+                } else {
+                    isSuspicious.add("Нет совпадений");
+                }
+            }
+
+
+            lastSuspicious = isSuspicious;
+            allStudents = TableParser.mapStudent(students, group, isInRe, lastSuspicious);
             allStatisticsInCourse = TableParser.mapCourse(students, group);
+
         } catch (IOException e) {
             e.printStackTrace();
         }

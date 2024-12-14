@@ -43,9 +43,11 @@ public class DBORMRepository {
     }
 
     public void saveStudent(ArrayList<String> students,
-                            ArrayList<String> group, ArrayList<String> isInRe) throws SQLException {
+                            ArrayList<String> group,
+                            ArrayList<String> isInRe, ArrayList<String> IsSusp) throws SQLException {
         for (int i = 0; i < students.size(); i++) {
-            STUDENTS_DAO.create(new StudentsEntity(students.get(i), group.get(i), isInRe.get(i)));
+            STUDENTS_DAO.create(new StudentsEntity(students.get(i),
+                    group.get(i), isInRe.get(i), IsSusp.get(i)));
         }
     }
     public List<StudentsEntity> getStudents() throws SQLException {
@@ -100,6 +102,7 @@ public class DBORMRepository {
         ArrayList<ArrayList<String>> resultList = (ArrayList<ArrayList<String>>) realScores.stream()
                 .map(stream -> stream.collect(Collectors.toCollection(ArrayList::new)));
         */
+
         List<Integer> sums = realScores.stream()
                 .map(stream -> stream
                         .mapToInt(Integer::parseInt)
@@ -113,6 +116,7 @@ public class DBORMRepository {
                             Integer.parseInt(maxScores.get(2)))),
                     sums.get(i).toString()));
         }
+
     }
 
     public List<CourseEntity> getCourse() throws SQLException {

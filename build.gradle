@@ -23,6 +23,9 @@ dependencies {
 
     implementation group: 'com.j256.ormlite', name: 'ormlite-jdbc', version: '6.1'
 
+    implementation group: 'jfree', name: 'jfreechart', version: '1.0.13'
+    implementation 'org.jfree:jfreechart:1.5.3'
+    implementation 'org.jfree:jcommon:1.0.24'
 }
 
 test {
